@@ -14,12 +14,15 @@ func ParseCity(contents []byte) engine.ParserResult{
 	result := engine.ParserResult{}
 	// generate ParserResult
 	for _, match := range matches{
+		name := string(match[2])
 
 		// convert item to string before appending
 		result.Items = append(result.Items, "User " + string(match[2]))
 		result.Requests = append(result.Requests, engine.Request{
 			Url: string(match[1]),
-			ParserFunc: engine.NilParser,
+			ParserFunc: func(c []byte) engine.ParserResult {
+				return ParseProfile(c, name) // function is first-class citizen...
+			},
 		})
 
 	}

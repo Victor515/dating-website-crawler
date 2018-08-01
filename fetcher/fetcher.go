@@ -10,11 +10,20 @@ import (
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/encoding/unicode"
 	"log"
+	"github.com/EDDYCJY/fake-useragent"
 )
 
 // Given a url string, return contents as a byte slice and an error
 func Fetch(url string) ([]byte, error){
-	resp, err := http.Get(url)
+	client := http.Client{}
+	request, err := http.NewRequest("GET", url, nil)
+	request.Header.Set("User-Agent", browser.Random())
+
+	if err != nil{
+		return nil, err
+	}
+
+	resp, err := client.Do(request)
 
 	if err != nil{
 		return nil, err

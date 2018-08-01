@@ -36,8 +36,9 @@ var guessRe = regexp.MustCompile(
 var idUrlRe = regexp.MustCompile(
 	`http://album.zhenai.com/u/([\d]+)`)
 
-func ParseProfile(contents []byte) engine.ParserResult{
+func ParseProfile(contents []byte, name string) engine.ParserResult{
 	profile := model.Profile{}
+	profile.Name = name
 
 	// extract all number element
 	age, err := strconv.Atoi(
