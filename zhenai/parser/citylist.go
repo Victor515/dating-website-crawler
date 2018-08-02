@@ -13,7 +13,6 @@ func ParseCityList(contents []byte) engine.ParserResult{
 
 	result := engine.ParserResult{}
 
-	limit := 10
 	// generate ParserResult
 	for _, match := range matches{
 
@@ -23,10 +22,6 @@ func ParseCityList(contents []byte) engine.ParserResult{
 			Url: string(match[1]),
 			ParserFunc: ParseCity,
 		})
-		limit--
-		if limit == 0{
-			break
-		}
 	}
 
 	return result

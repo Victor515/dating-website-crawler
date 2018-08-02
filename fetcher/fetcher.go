@@ -11,10 +11,15 @@ import (
 	"golang.org/x/text/encoding/unicode"
 	"log"
 	"github.com/EDDYCJY/fake-useragent"
+	"time"
 )
+
+// life cycle of rateLimiter is the whole fetcher package
+var rateLimiter = time.Tick(100 * time.Millisecond)
 
 // Given a url string, return contents as a byte slice and an error
 func Fetch(url string) ([]byte, error){
+	<-rateLimiter
 	client := http.Client{}
 	request, err := http.NewRequest("GET", url, nil)
 	request.Header.Set("User-Agent", browser.Random())

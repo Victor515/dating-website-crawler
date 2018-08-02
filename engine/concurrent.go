@@ -28,10 +28,13 @@ func (e *ConcurrentEngine) Run(seeds ...Request){
 		e.Scheduler.Submit(seed)
 	}
 
+	itemCount := 0
 	for{
+		// receive the result
 		result := <- out
 		for _, item := range result.Items{
-			log.Printf("Got Item: %v", item)
+			log.Printf("Got Item#%d: %v", itemCount, item)
+			itemCount++
 		}
 
 		// add new request to the scheduler
@@ -50,6 +53,7 @@ func createWorker(in chan Request, out chan ParserResult){
 			if err != nil{
 				continue
 			}
+
 			// send result to out channel
 			out <- result
 		}
