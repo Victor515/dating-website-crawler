@@ -15,7 +15,7 @@ import (
 )
 
 // life cycle of rateLimiter is the whole fetcher package
-var rateLimiter = time.Tick(100 * time.Millisecond)
+var rateLimiter = time.Tick(10 * time.Millisecond)
 
 // Given a url string, return contents as a byte slice and an error
 func Fetch(url string) ([]byte, error){
