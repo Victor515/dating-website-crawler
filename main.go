@@ -2,8 +2,8 @@ package main
 
 import (
 	"crawler/engine"
-	"crawler/zhenai/parser"
 	"crawler/scheduler"
+	"crawler/zhenai/parser"
 )
 
 func main() {
@@ -13,9 +13,14 @@ func main() {
 	}
 	//e := engine.SimpleEngine{}
 
+	//e.Run(engine.Request{
+	//	Url:        "http://www.zhenai.com/zhenghun",
+	//	ParserFunc: parser.ParseCityList,
+	//})
+
 	e.Run(engine.Request{
-		Url:        "http://www.zhenai.com/zhenghun",
-		ParserFunc: parser.ParseCityList,
+		Url: "http://www.zhenai.com/zhenghun/aba",
+		ParserFunc:parser.ParseCity,
 	})
 
 }
