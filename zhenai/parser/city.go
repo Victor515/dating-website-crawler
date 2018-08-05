@@ -5,11 +5,13 @@ import (
 	"regexp"
 )
 
-const cityRE = `<a href="(http://album.zhenai.com/u/[0-9]+)"[^>]*>([^<]+)</a>`
+var (
+	profileRE = regexp.MustCompile(`<a href="(http://album.zhenai.com/u/[0-9]+)"[^>]*>([^<]+)</a>`)
+	cityURL = regexp.MustCompile(`href="(http://www.zhenai.com/zhenghun/shanghai/[^"]+)"`)
+	)
 
 func ParseCity(contents []byte) engine.ParserResult{
-	re := regexp.MustCompile(cityRE)
-	matches := re.FindAllSubmatch(contents, -1) // match contents
+	matches := profileRE.FindAllSubmatch(contents, -1) // match contents
 
 	result := engine.ParserResult{}
 	// generate ParserResult
@@ -25,6 +27,15 @@ func ParseCity(contents []byte) engine.ParserResult{
 			},
 		})
 
+	}
+
+	matches = cityURL.FindAllSubmatch(contents, -1)
+
+	for _, match := range matches{
+		result.Requests = append(result.Requests, engine.Request{
+			Url:string(match[1]),
+			ParserFunc: ParseCity,
+		})
 	}
 
 	return result

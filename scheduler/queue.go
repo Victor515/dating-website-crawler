@@ -7,16 +7,17 @@ type QueueScheduler struct {
 	workerChan  chan chan engine.Request
 }
 
+func (s *QueueScheduler) WorkerChan() chan engine.Request {
+	return make(chan engine.Request)
+}
+
 func (s *QueueScheduler) Submit(request engine.Request) {
 	s.requestChan <- request
 }
 
-func (s *QueueScheduler) WorkerReady(w chan engine.Request){
+// tell the scheduler this worker is ready
+func (s *QueueScheduler) WorkerReady(w chan engine.Request) {
 	s.workerChan <- w
-}
-
-func (s *QueueScheduler) ConfigureMasterWorkerChannel(chan engine.Request) {
-	panic("Implements me")
 }
 
 func (s *QueueScheduler) Run(){

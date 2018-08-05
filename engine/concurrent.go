@@ -1,6 +1,9 @@
 package engine
 
-import "log"
+import (
+	"log"
+	"crawler/model"
+)
 
 type ConcurrentEngine struct{
 	Scheduler Scheduler
@@ -8,10 +11,14 @@ type ConcurrentEngine struct{
 }
 
 type Scheduler interface {
+	ReadyNotifier
 	Submit(request Request)
-	ConfigureMasterWorkerChannel(chan Request)
-	WorkerReady(chan Request)
+	WorkerChan() chan Request
 	Run()
+}
+
+type ReadyNotifier interface {
+	WorkerReady(chan Request)
 }
 
 func (e *ConcurrentEngine) Run(seeds ...Request){
@@ -21,11 +28,16 @@ func (e *ConcurrentEngine) Run(seeds ...Request){
 
 	for i := 0; i < e.WorkerCount; i++{
 		// create workers
-		createWorker(out, e.Scheduler)
+		in := e.Scheduler.WorkerChan()
+		createWorker(in, out, e.Scheduler)
 	}
 
 	// submit request
 	for _, seed := range seeds{
+		if(isDup(seed.Url)){
+			//log.Printf("Duplicate request: %s", seed.Url)
+			continue
+		}
 		e.Scheduler.Submit(seed)
 	}
 
@@ -34,23 +46,30 @@ func (e *ConcurrentEngine) Run(seeds ...Request){
 		// receive the result
 		result := <- out
 		for _, item := range result.Items{
-			log.Printf("Got Item#%d: %v", itemCount, item)
-			itemCount++
+			if _, ok := item.(model.Profile); ok {
+				log.Printf("Got Item#%d: %v", itemCount, item)
+				itemCount++
+			}
 		}
+
 
 		// add new request to the scheduler
 		for _, req := range result.Requests{
+			// remove URL duplicates
+			if(isDup(req.Url)){
+				//log.Printf("Duplicate request: %s", req.Url)
+				continue
+			}
 			e.Scheduler.Submit(req)
 		}
 	}
 }
 
-func createWorker(out chan ParserResult, s Scheduler){
-	in := make(chan Request)
+func createWorker(in chan Request, out chan ParserResult, ready ReadyNotifier){
 	go func() {
 		for{
 			// tell scheduler I'm ready!
-			s.WorkerReady(in)
+			ready.WorkerReady(in)
 			request := <- in
 			result, err := worker(request)
 			if err != nil{
@@ -61,5 +80,15 @@ func createWorker(out chan ParserResult, s Scheduler){
 			out <- result
 		}
 	}()
+}
 
+var visitedURL = make(map[string]bool)
+
+func isDup(url string) bool{
+	if(visitedURL[url]){
+		return  true
+	}else{
+		visitedURL[url] = true
+		return  false
+	}
 }
