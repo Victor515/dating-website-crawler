@@ -1,13 +1,9 @@
 package engine
 
-import (
-	"log"
-	"crawler/model"
-)
-
 type ConcurrentEngine struct{
 	Scheduler Scheduler
 	WorkerCount int
+	ItemChan    chan interface{}
 }
 
 type Scheduler interface {
@@ -41,15 +37,13 @@ func (e *ConcurrentEngine) Run(seeds ...Request){
 		e.Scheduler.Submit(seed)
 	}
 
-	itemCount := 0
 	for{
 		// receive the result
 		result := <- out
 		for _, item := range result.Items{
-			if _, ok := item.(model.Profile); ok {
-				log.Printf("Got Item#%d: %v", itemCount, item)
-				itemCount++
-			}
+			go func(item interface{}) {
+				e.ItemChan <- item
+			}(item) // need to pass item to the goroutine
 		}
 
 
