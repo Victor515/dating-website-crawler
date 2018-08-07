@@ -31,12 +31,10 @@ var houseRe = regexp.MustCompile(
 	`<td><span class="label">住房条件：</span><span field="">([^<]+)</span></td>`)
 var carRe = regexp.MustCompile(
 	`<td><span class="label">是否购车：</span><span field="">([^<]+)</span></td>`)
-var guessRe = regexp.MustCompile(
-	`<a class="exp-user-name"[^>]*href="(http://album.zhenai.com/u/[\d]+)">([^<]+)</a>`)
 var idUrlRe = regexp.MustCompile(
 	`http://album.zhenai.com/u/([\d]+)`)
 
-func ParseProfile(contents []byte, name string) engine.ParserResult{
+func ParseProfile(contents []byte, url string, name string) engine.ParserResult{
 	profile := model.Profile{}
 	profile.Name = name
 
@@ -81,7 +79,14 @@ func ParseProfile(contents []byte, name string) engine.ParserResult{
 
 
 	result := engine.ParserResult{
-		Items: []interface{}{profile},
+		Items: []engine.Item{
+			{
+				Url: url,
+				Type: "zhenai",
+				Id: extractString([]byte(url), idUrlRe),
+				Payload: profile,
+			},
+		},
 	}
 	return result
 }

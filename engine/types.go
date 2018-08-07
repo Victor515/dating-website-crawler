@@ -7,12 +7,15 @@ type Request struct {
 
 type ParserResult struct {
 	Requests []Request
-	Items    []interface{}
+	Items    []Item
 }
 
-//type Item{
-//
-//}
+type Item struct {
+	Url 	string
+	Type    string
+	Id  	string
+	Payload interface{}
+}
 
 func NilParser([]byte) ParserResult{
 	return ParserResult{}
