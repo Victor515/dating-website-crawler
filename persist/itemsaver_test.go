@@ -31,13 +31,6 @@ func TestSave(t *testing.T) {
 		},
 	}
 
-	// save item
-	err := save(expected)
-
-	if err != nil{
-		panic(err)
-	}
-
 
 	// TODO: Try to start up elasticsearch in go client
 	client, err := elastic.NewClient(
@@ -48,9 +41,17 @@ func TestSave(t *testing.T) {
 		panic(err)
 	}
 
+	// save item
+	const index = "dating_test"
+	err = save(client, expected, index)
+
+	if err != nil{
+		panic(err)
+	}
+
 	// get item
 	result, err := client.Get().
-		Index("dating_profile").
+		Index(index).
 		Type(expected.Type).
 		Id(expected.Id).
 		Do(context.Background())

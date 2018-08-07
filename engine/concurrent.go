@@ -3,7 +3,7 @@ package engine
 type ConcurrentEngine struct{
 	Scheduler Scheduler
 	WorkerCount int
-	ItemChan    chan interface{}
+	ItemChan    chan Item
 }
 
 type Scheduler interface {
@@ -41,7 +41,7 @@ func (e *ConcurrentEngine) Run(seeds ...Request){
 		// receive the result
 		result := <- out
 		for _, item := range result.Items{
-			go func(item interface{}) {
+			go func(item Item) {
 				e.ItemChan <- item
 			}(item) // need to pass item to the goroutine
 		}

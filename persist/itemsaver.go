@@ -8,7 +8,16 @@ import (
 	"errors"
 )
 
-func ItemSaver() chan engine.Item{
+func ItemSaver(index string) (chan engine.Item, error){
+	client, err := elastic.NewClient(
+		// must turn off in docker
+		elastic.SetSniff(false),
+	)
+
+	if err != nil{
+		return nil, err
+	}
+
 	out := make(chan engine.Item)
 	go func() {
 		itemCount := 0
@@ -17,25 +26,19 @@ func ItemSaver() chan engine.Item{
 			log.Printf("Item Saver got Item%d: %v", itemCount, item)
 			itemCount++
 
-			err := save(item)
+			err := save(client, item, index)
 
 			if err != nil{
 				log.Printf("Itemsaver error when saving item %v: %v", item, err)
 			}
 		}
 	}()
-	return out
+
+	return out, nil
 }
 
-func save(item engine.Item) error{
-	client, err := elastic.NewClient(
-		// must turn off in docker
-		elastic.SetSniff(false),
-	)
+func save(client *elastic.Client, item engine.Item, index string) error{
 
-	if err != nil{
-		return err
-	}
 
 	if item.Type == ""{
 		return errors.New("must supply Type")
@@ -43,7 +46,7 @@ func save(item engine.Item) error{
 
 
 	indexService := client.Index().
-		Index("dating_profile").
+		Index(index).
 		Type(item.Type).
 		BodyJson(item)
 
@@ -52,7 +55,7 @@ func save(item engine.Item) error{
 	}
 
 
-	_, err = indexService.
+	_, err := indexService.
 		Do(context.Background())
 
 	if err != nil{
