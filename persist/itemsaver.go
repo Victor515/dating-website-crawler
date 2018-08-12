@@ -12,6 +12,7 @@ func ItemSaver(index string) (chan engine.Item, error){
 	client, err := elastic.NewClient(
 		// must turn off in docker
 		elastic.SetSniff(false),
+		elastic.SetURL("http://192.168.99.100:9200"),
 	)
 
 	if err != nil{

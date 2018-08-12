@@ -17,7 +17,7 @@ func (e SimpleEngine) Run (seeds ...Request){
 		requests = requests[1:]
 
 		// workers complete the request
-		result, err := worker(r)
+		result, err := Worker(r)
 		if err != nil{
 			continue
 		}

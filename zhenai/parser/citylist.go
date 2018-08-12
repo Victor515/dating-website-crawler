@@ -7,7 +7,7 @@ import (
 
 const reString = `<a href="(http://www.zhenai.com/zhenghun/[0-9a-z]+)"[^>]+>([^<]+)</a>`
 
-func ParseCityList(contents []byte) engine.ParserResult{
+func ParseCityList(contents []byte, _ string) engine.ParserResult{
 	re := regexp.MustCompile(reString)
 	matches := re.FindAllSubmatch(contents, -1) // match contents
 
@@ -19,7 +19,7 @@ func ParseCityList(contents []byte) engine.ParserResult{
 		// convert item to string before appending
 		result.Requests = append(result.Requests, engine.Request{
 			Url: string(match[1]),
-			ParserFunc: ParseCity,
+			Parser: engine.NewFuncParser(ParseCity, "ParseCity"),
 		})
 	}
 

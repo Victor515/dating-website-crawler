@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func worker(r Request) (ParserResult, error){
+func Worker(r Request) (ParserResult, error){
 	// fetch text
 	//log.Printf("Fetching Url: %s", r.Url)
 	contents, err := fetcher.Fetch(r.Url)
@@ -15,6 +15,6 @@ func worker(r Request) (ParserResult, error){
 		return ParserResult{}, err
 	}
 	// feed to parser
-	return  r.ParserFunc(contents), nil
+	return  r.Parser.Parse(contents, r.Url), nil
 
 }

@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strconv"
 	"crawler/model"
+	"crawler/config"
 )
 
 var ageRe = regexp.MustCompile(
@@ -34,7 +35,7 @@ var carRe = regexp.MustCompile(
 var idUrlRe = regexp.MustCompile(
 	`http://album.zhenai.com/u/([\d]+)`)
 
-func ParseProfile(contents []byte, url string, name string) engine.ParserResult{
+func parseProfile(contents []byte, url string, name string) engine.ParserResult{
 	profile := model.Profile{}
 	profile.Name = name
 
@@ -102,3 +103,27 @@ func extractString(
 		return ""
 	}
 }
+
+type ProfileParser struct {
+	userName string
+}
+
+func (p *ProfileParser) Parse(contents []byte, url string) engine.ParserResult {
+	return  parseProfile(contents, url, p.userName)
+}
+
+func (p *ProfileParser) Serialize() (name string, args interface{}) {
+	return config.ParseProfile, p.userName
+}
+
+func NewProfileParser(name string) *ProfileParser{
+	return &ProfileParser{
+		userName:name,
+	}
+}
+
+//func ProfileParser(name string) engine.ParserFunc{
+//	return func(contents []byte, url string) engine.ParserResult{
+//		return parseProfile(contents, url, name)
+//	}
+//}
