@@ -18,6 +18,7 @@ func main() {
 		Scheduler:   &scheduler.QueueScheduler{},
 		WorkerCount: 100,
 		ItemChan:    itemChan,
+		RequestProcessor: engine.Worker,
 	}
 	//e := engine.SimpleEngine{}
 
