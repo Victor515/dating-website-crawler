@@ -20,6 +20,7 @@ var rateLimiter = time.Tick(10 * time.Millisecond)
 // Given a url string, return contents as a byte slice and an error
 func Fetch(url string) ([]byte, error){
 	<-rateLimiter
+	log.Printf("Fetching url: %s", url)
 	client := http.Client{}
 	request, err := http.NewRequest("GET", url, nil)
 	request.Header.Set("User-Agent", browser.Random())
