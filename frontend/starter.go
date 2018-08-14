@@ -7,10 +7,10 @@ import (
 
 func main() {
 	// serve css and js files
-	http.Handle("/", http.FileServer(http.Dir("frontend/view")))
+	http.Handle("/", http.FileServer(http.Dir("crawler/frontend/view")))
 
 	// handle /search
-	http.Handle("/search", controller.CreateSearchResultHandler("frontend/view/template.html"))
+	http.Handle("/search", controller.CreateSearchResultHandler("crawler/frontend/view/template.html"))
 	err := http.ListenAndServe(":8888", nil)
 
 	if err != nil{
