@@ -30,8 +30,11 @@ There is a distributed version of this project. For details, please refer to [it
 
 ## App Architecture 
 
+<img src="screenshots/03-crawler_architecture.png">
 
 
 
 
-  
+
+
+
